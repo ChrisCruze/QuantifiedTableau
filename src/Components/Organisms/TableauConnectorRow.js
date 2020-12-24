@@ -5,9 +5,9 @@ import TableauConnectorButton from "../Molecules/TableauConnectorButton";
 const TableauConnectorRow = () => {
   return (
     <PropsContext.Consumer>
-      {({ tableau, connectionName }) => (
+      {({ func }) => (
         <div class="row">
-          <TableauConnectorButton tableau={tableau} connectionName={connectionName} />
+          <TableauConnectorButton func={func} />
         </div>
       )}
     </PropsContext.Consumer>

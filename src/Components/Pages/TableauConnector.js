@@ -4,7 +4,13 @@ import TableauConnectorTemplate from "../Templates/TableauConnectorTemplate";
 import { pullTodoistCompleted } from "../../Hooks/useTodoist";
 
 const TableauConnector = () => {
-  function refresh_data() {
+  function refresh_data() {}
+
+  useEffect(() => {
+    refresh_data();
+  }, []);
+
+  function tableauSubmit() {
     // Create the connector object
     var myConnector = tableau.makeConnector();
 
@@ -83,15 +89,13 @@ const TableauConnector = () => {
     };
 
     tableau.registerConnector(myConnector);
+    tableau.connectionName = "Rumble Capital Visits"; // This will be the data source name in Tableau
+    tableau.submit(); // This sends the connector object to Tableau
   }
-
-  useEffect(() => {
-    refresh_data();
-  }, []);
 
   return (
     <Fragment>
-      <PropsContext.Provider value={{ tableau, connectionName: "Rumble Data" }}>
+      <PropsContext.Provider value={{ func: tableauSubmit }}>
         <TableauConnectorTemplate />
       </PropsContext.Provider>
     </Fragment>
