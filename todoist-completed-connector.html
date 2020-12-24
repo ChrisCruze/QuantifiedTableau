@@ -377,8 +377,9 @@
 
       function sub_content_create(todoist_dict) {
         const content = todoist_dict["content"];
-        const sub_content = content.split("[")[0].split(":")[1];
-        todoist_dict["sub_content"] = sub_content;
+        const sub_content = content.split("[")[0].split(":")[1] || "";
+        const sub_content_part = sub_content.split("-")[0].trim();
+        todoist_dict["sub_content"] = sub_content_part;
         return todoist_dict;
       }
 
@@ -580,11 +581,23 @@
         return days_back_completed > days_back_required; //|| 45;
       }
 
+      function url_params_pull() {
+        a = window.location.search.substr(1).split("&");
+        if (a == "") return {};
+        var b = {};
+        for (var i = 0; i < a.length; ++i) {
+          var p = a[i].split("=", 2);
+          if (p.length == 1) b[p[0]] = "";
+          else b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+        }
+        return b;
+      }
+
       const pullTodoistCompleted = value =>
         updateTodoistOffset(value).then(result => {
           var earliest_date_is_sufficient = todoist_determine_if_result_qualifies_for_earliest_date({
             items: result.items,
-            days_back_required: 30
+            days_back_required: url_params_pull()["days"] || 30
           });
           if (earliest_date_is_sufficient) {
             const transformed_response = todoist_result_flatten(value);
