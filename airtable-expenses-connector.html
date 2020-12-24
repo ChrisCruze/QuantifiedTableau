@@ -34,7 +34,7 @@
     <div class="container container-table">
       <div class="row vertical-center-row">
         <div class="text-center col-md-4 col-md-offset-4">
-          <button type="button" id="submitButton" class="btn btn-success" style="margin: 10px;">Get Rumble Data</button>
+          <button type="button" id="submitButton" class="btn btn-success" style="margin: 10px;">Get Data</button>
         </div>
       </div>
     </div>
@@ -90,7 +90,8 @@
         myConnector.getSchema = function(schemaCallback) {
           var cols = [
             {
-              id: "Date",
+              id: "date",
+              alias: "date",
               dataType: tableau.dataTypeEnum.date
             },
             {
