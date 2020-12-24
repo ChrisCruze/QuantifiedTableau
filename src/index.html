@@ -1,66 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cruz.site44.com/font-awesome/css/font-awesome.css" rel="stylesheet" />
-    <link href="https://cruz.site44.com/css/plugins/toastr/toastr.min.css" rel="stylesheet" />
-    <link href="https://cruz.site44.com/js/plugins/gritter/jquery.gritter.css" rel="stylesheet" />
-    <link href="https://cruz.site44.com/css/animate.css" rel="stylesheet" />
-    <link href="https://cruz.site44.com/css/style.css" rel="stylesheet" />
-    <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" />
-    <link href="https://cruz.site44.com/css/plugins/toastr/toastr.min.css" rel="stylesheet" />
+    <title>Rumble Capital Data Feed</title>
+    <meta http-equiv="Cache-Control" content="no-store" />
 
-    <link href="https://cruz.site44.com/css/plugins/dataTables/datatables.min.css" rel="stylesheet" />
     <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
       rel="stylesheet"
-      type="text/css"
-      href="https://cdn.datatables.net/v/bs/jszip-2.5.0/dt-1.10.16/af-2.2.2/b-1.5.1/b-colvis-1.5.1/b-flash-1.5.1/b-html5-1.5.1/b-print-1.5.1/cr-1.4.1/fc-3.2.4/fh-3.1.3/kt-2.3.2/r-2.2.1/rg-1.0.2/rr-1.2.3/sc-1.4.4/sl-1.2.5/datatables.min.css"
+      integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+      crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="https://cdn.rawgit.com/vderm9/jutility/master/css/editor.dataTables.min.css" />
-
-    <title>QuantifiedSelf</title>
-  </head>
-
-  <body>
-    <div id="root"></div>
-
-    <script src="https://cruz.site44.com/js/jquery-3.1.1.min.js"></script>
-    <script src="https://cruz.site44.com/js/bootstrap.min.js"></script>
-    <script src="https://cruz.site44.com/js/plugins/metisMenu/jquery.metisMenu.js"></script>
-    <script src="https://cruz.site44.com/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
-    <script src="https://cruz.site44.com/js/inspinia.js"></script>
-    <script src="https://cruz.site44.com/js/plugins/pace/pace.min.js"></script>
-    <script src="https://cruz.site44.com/js/plugins/jquery-ui/jquery-ui.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.8.6/showdown.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore.js"></script>
-    <script src="https://cruz.site44.com/lib/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min.js"></script>
-    <script src="https://chriscross.site44.com/js/chartjs_stackable_bars.js"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-    <script src="https://cruz.site44.com/js/plugins/dataTables/datatables.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js" type="text/javascript"></script>
     <script
-      type="text/javascript"
-      src="https://cdn.datatables.net/v/bs/jszip-2.5.0/dt-1.10.16/af-2.2.2/b-1.5.1/b-colvis-1.5.1/b-flash-1.5.1/b-html5-1.5.1/b-print-1.5.1/cr-1.4.1/fc-3.2.4/fh-3.1.3/kt-2.3.2/r-2.2.1/rg-1.0.2/rr-1.2.3/sc-1.4.4/sl-1.2.5/datatables.min.js"
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+      integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+      crossorigin="anonymous"
     ></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-
-    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.16/api/sum().js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.16/sorting/datetime-moment.js"></script>
-    <script type="text/javascript" src="https://cdn.rawgit.com/vderm9/jutility/master/js/dataTables.editor.min.js"></script>
-    <script src="https://rawgit.com/vderm9/jutility/master/jutility.js"></script>
-    <script src="https://rawgit.com/ChrisCruze/jutility/master/jutility.js"></script>
-    <script src="https://chriscross.site44.com/js/jutility.js"></script>
-    <script src="src/functions.js"></script>
-    <script src="https://cruz.site44.com/js/inspinia.js"></script>
-
     <script src="https://connectors.tableau.com/libs/tableauwdc-2.1.1.js" type="text/javascript"></script>
 
     <script
@@ -70,5 +25,13 @@
     ></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.11.0/underscore-min.js"></script>
+    <script src="https://cruz.site44.com/js/jquery-3.1.1.min.js"></script>
+
+    <script src="https://rawgit.com/ChrisCruze/jutility/master/jutility.js"></script>
+    <script src="https://chriscross.site44.com/js/jutility.js"></script>
+  </head>
+
+  <body>
+    <div id="root"></div>
   </body>
 </html>
