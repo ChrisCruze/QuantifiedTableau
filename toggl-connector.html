@@ -38,6 +38,21 @@
       </div>
     </div>
     <script>
+
+      function project_get_from_description(description){
+        try{
+          return description.split(":")[1].split("-")[0].trim()
+        }
+        catch (err){
+          return '-'
+        }
+      }
+      function project_category_fields_get(description){
+        category = description.split(":")[0].trim()
+        project = project_get_from_description(description)
+        return {category,project}
+      }
+
       function toggl_time_fields(dur) {
         var minutes = parseFloat(dur) / 1000 / 60;
         var hours = minutes / 60;
@@ -47,7 +62,7 @@
 
       function toggl_list_to_time_fields(list) {
         return _.map(list, function(obj) {
-          return { ...obj, ...toggl_time_fields(obj.dur), date: moment(obj.end).format("YYYY-MM-DD") };
+          return { ...obj,...project_category_fields_get(obj.description), ...toggl_time_fields(obj.dur), date: moment(obj.end).format("YYYY-MM-DD") };
         });
       }
 
@@ -73,7 +88,7 @@
       }
 
       function pullTogglPageAll({ api_token, user_agent, workspace_id, toggl_list }) {
-        const since = "2020-08-20";
+        const since = "2020-12-01"//"2020-08-20";
 
         function pullTogglPage(toggl_tasks_pulled) {
           return new Promise(resolve => {
@@ -95,9 +110,7 @@
             console.log({ ajax_request });
             const result = $.ajax(ajax_request)
               .then(result => {
-                console.log({ result });
-                const response_data = result.data;
-                console.log({ response_data });
+                const response_data = toggl_list_to_time_fields(result.data);
                 resolve(response_data);
               })
               .catch(error => {
@@ -129,10 +142,59 @@
               dataType: tableau.dataTypeEnum.string
             },
             {
+              id: "id",
+              dataType: tableau.dataTypeEnum.string
+            },
+            {
+              id: "dur",
+              alias: "dur",
+              dataType: tableau.dataTypeEnum.float
+            },
+            {
+              id: "cost",
+              alias: "cost",
+              dataType: tableau.dataTypeEnum.float
+            },
+            {
+              id: "hours",
+              alias: "hours",
+              dataType: tableau.dataTypeEnum.float
+            },
+            {
+              id: "minutes",
+              alias: "minutes",
+              dataType: tableau.dataTypeEnum.float
+            },
+            {
+              id: "date",
+              alias: "date",
+              dataType: tableau.dataTypeEnum.date
+            },
+            {
               id: "start",
               alias: "start",
+              dataType: tableau.dataTypeEnum.datetime
+            },
+            {
+              id: "end",
+              alias: "end",
+              dataType: tableau.dataTypeEnum.datetime
+            },
+            {
+              id: "updated",
+              alias: "updated",
+              dataType: tableau.dataTypeEnum.datetime
+            },
+            {
+              id: "project",
+              alias: "project",
               dataType: tableau.dataTypeEnum.string
-            }
+            },
+            {
+              id: "category",
+              alias: "category",
+              dataType: tableau.dataTypeEnum.string
+            },
           ];
 
           var tableSchema = {
@@ -156,7 +218,19 @@
             for (var i = 0, len = feat.length; i < len; i++) {
               tableData.push({
                 description: feat[i].description,
-                start: feat[i].start
+                id: feat[i].id,
+                dur: feat[i].dur,
+                cost: feat[i].cost,
+                hours: feat[i].hours,
+                minutes: feat[i].minutes,
+                date: feat[i].date,
+                start:moment(feat[i].start).format("YYYY-MM-DD HH:mm:ss"),
+                end:moment(feat[i].end).format("YYYY-MM-DD HH:mm:ss"),
+                updated:moment(feat[i].updated).format("YYYY-MM-DD HH:mm:ss"),
+                project: feat[i].project,
+                category: feat[i].category,
+
+
               });
             }
             table.appendRows(tableData);
