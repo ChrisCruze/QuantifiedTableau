@@ -174,9 +174,9 @@
             console.log({ transformed_response });
             return transformed_response;
           } else {
-            value.push(result);
-            console.log({value})
-            return pullTogglAll(value);
+            var transformed_response = value.concat(result)
+            console.log({transformed_response})
+            return pullTogglAll(transformed_response);
           }
         });
 
