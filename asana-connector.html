@@ -39,56 +39,170 @@
     </div>
     <script>
 
-      function project_get_from_description(description){
-        try{
-          return description.split(":")[1].split("-")[0].trim()
-        }
-        catch (err){
-          return '-'
-        }
-      }
-      function project_category_fields_get(description){
-        category = description.split(":")[0].trim()
-        project = project_get_from_description(description)
-        return {category,project}
-      }
+function asana_users_me_get() {
+  const result = $.ajax({
+    type: "GET",
+    url: "https://app.asana.com/api/1.0/users/me",
+    dataType: "json",
+    async: false,
+    data: {
+      access_token: "0/b2cf1e0b1b07fc536cea4914aa3d488d"
+    }
+  });
+  return result.responseJSON;
+}
 
-      function toggl_time_fields(dur) {
-        var minutes = parseFloat(dur) / 1000 / 60;
-        var hours = minutes / 60;
-        var cost = hours * 15;
-        return { minutes, hours, cost };
-      }
+function asana_workspaces_get() {
+  const result = $.ajax({
+    type: "GET",
+    url: "https://app.asana.com/api/1.0/workspaces",
+    dataType: "json",
+    async: false,
+    data: {
+      access_token: "0/b2cf1e0b1b07fc536cea4914aa3d488d"
+    }
+  });
+  return result.responseJSON;
+}
 
-      function toggl_list_to_time_fields(list) {
-        return _.map(list, function(obj) {
-          return { ...obj,...project_category_fields_get(obj.description), ...toggl_time_fields(obj.dur), date: moment(obj.end).format("YYYY-MM-DD") };
-        });
-      }
+function asana_projects_get(callback) {
+  const result = $.ajax({
+    type: "GET",
+    url: "https://app.asana.com/api/1.0/projects",
+    dataType: "json",
+    async: false,
+    data: {
+      access_token: "0/b2cf1e0b1b07fc536cea4914aa3d488d",
+      workspace: 1198192240523721
+    }
+  });
+  result.then(response => {
+    console.log({ response });
+    callback(response["data"]);
+  });
+  console.log({ result });
+  return result.responseJSON["data"];
+}
 
-      function pullToggl({ updateData, api_token, user_agent, workspace_id }) {
-        // var api_token = "4c2e7a7083b4434da3fda4fef989f353";
-        return $.ajax({
-          type: "GET",
-          url: "https://toggl.com/reports/api/v2/details",
-          headers: {
-            Authorization: "Basic " + btoa(api_token + ":" + "api_token")
-          },
-          dataType: "json",
-          async: false,
-          data: {
-            user_agent: user_agent || "vdermwcc@gmail.com",
-            workspace_id: workspace_id || "2429477"
-          }
-        }).then(response => {
-          var response_data = response.data;
-          var response_data_with_time = toggl_list_to_time_fields(response_data);
-          updateData(response_data_with_time);
-        });
-      }
+function asana_tasks_get(project_id) {
+  const result = $.ajax({
+    type: "GET",
+    url: "https://app.asana.com/api/1.0/projects/" + project_id + "/tasks",
+    dataType: "json",
+    async: false,
+    data: {
+      access_token: "0/b2cf1e0b1b07fc536cea4914aa3d488d"
+    }
+  });
+  return result.responseJSON["data"];
+  //
+}
+
+function asana_task_get(task_id) {
+  const result = $.ajax({
+    type: "GET",
+    url: "https://app.asana.com/api/1.0/tasks/" + task_id,
+    dataType: "json",
+    async: false,
+    data: {
+      access_token: "0/b2cf1e0b1b07fc536cea4914aa3d488d"
+    }
+  });
+  return result.responseJSON["data"];
+}
+
+function combine_grouped_lists_to_one(grouped_list) {
+  return _.reduce(
+    grouped_list,
+    function(memo, num) {
+      return memo.concat(num);
+    },
+    []
+  );
+}
+function asana_tasks_get_from_projects(projects_array) {
+  var tasks_group_together = _.map(projects_array, function(D) {
+    var tasks_group = asana_tasks_get(D["gid"]);
+    console.log({tasks_group})
+    return tasks_group;
+  });
+  return combine_grouped_lists_to_one(tasks_group_together);
+}
+
+function asana_task_detail_custom_fields_apply_dictionary_project_name(D) {
+  var project_list = D["projects"];
+  if (project_list.length > 0) {
+    var project_name = project_list[0]["name"];
+  } else {
+    var project_name = "NULL";
+  }
+  return project_name;
+}
+
+function asana_task_detail_custom_fields_apply_dictionary_project_id(D) {
+  var project_list = D["projects"];
+  if (project_list.length > 0) {
+    var project_name = project_list[0]["gid"];
+  } else {
+    var project_name = "NULL";
+  }
+  return project_name;
+}
+
+function asana_task_detail_custom_fields_apply_dictionary_assigne_name(D) {
+  var assignee_dict = D["assignee"];
+  if (assignee_dict != undefined) {
+    var assignee_name = assignee_dict["name"];
+  } else {
+    var assignee_name = "NULL";
+  }
+  return assignee_name;
+}
+
+function asana_task_detail_custom_fields_apply_dictionary(D) {
+  D["assignee_name"] = asana_task_detail_custom_fields_apply_dictionary_assigne_name(D);
+  D["project_name"] = asana_task_detail_custom_fields_apply_dictionary_project_name(D);
+  D["project_id"] = asana_task_detail_custom_fields_apply_dictionary_project_id(D);
+  D["age"] = moment().diff(moment(D["created_at"]), "days");
+  return D;
+}
+
+function asana_task_detail_custom_fields_apply_list(array) {
+  var l = [];
+  array.forEach(function(D) {
+    var new_dict = asana_task_detail_custom_fields_apply_dictionary(D);
+    l.push(new_dict);
+  });
+  return l;
+}
+
+function projects_from_local() {
+  return [
+    {
+      gid: "1198192308830985",
+      name: "VanPro",
+      resource_type: "project"
+    },
+    {
+      gid: "1199146569803107",
+      name: "Rumble Capital",
+      resource_type: "project"
+    }
+  ];
+}
+
+function asana_tasks_detail_pull() {
+  const projects_array = projects_from_local(); //projects_from_local_storage(); //asana_projects_get();
+  var full_array = asana_tasks_get_from_projects(projects_array);
+  var task_details = _.map(full_array, function(D) {
+    return asana_task_get(D["gid"]);
+  });
+  return asana_task_detail_custom_fields_apply_list(task_details);
+}
+
 
       function pullTogglPageAll({ api_token, user_agent, workspace_id, toggl_list }) {
-        const since = "2020-12-20";//"2020-08-20";
+        const since = "2020-08-20";
 
         function pullTogglPage(toggl_tasks_pulled) {
           return new Promise(resolve => {
