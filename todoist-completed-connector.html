@@ -668,6 +668,7 @@
 
         myConnector.getData = function(table, doneCallback) {
           pullTodoistCompleted([]).then(final_response => {
+            console.log({final_response})
             feat = final_response;
             tableData = [];
             for (var i = 0, len = feat.length; i < len; i++) {
