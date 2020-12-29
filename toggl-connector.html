@@ -33,7 +33,7 @@
     <div class="container container-table">
       <div class="row vertical-center-row">
         <div class="text-center col-md-4 col-md-offset-4">
-          <button type="button" id="submitButton" class="btn btn-success" style="margin: 10px;">Get Data</button>
+          <button type="button" id="submitButton" class="btn btn-success" style="margin: 10px;">Get Toggl Data</button>
         </div>
       </div>
     </div>
@@ -140,6 +140,7 @@
           workspace_id= "2429477"
           since =  "2020-08-20";//"2020-12-20";//
 
+          const list_length = toggl_tasks_pulled.length
           const ajax_request = {
             type: "GET",
             url: "https://toggl.com/reports/api/v2/details",
@@ -152,9 +153,10 @@
               user_agent: user_agent || "vdermwcc@gmail.com",
               workspace_id: workspace_id || "2429477",
               since: since,
-              page: toggl_tasks_pulled.length == 0 ? 1 : Math.ceil(toggl_tasks_pulled.length / 50)
+              page: toggl_tasks_pulled.length == 0 ? 1 : Math.ceil(toggl_tasks_pulled.length / 50) + 1
             }
           };
+          // console.log({ajax_request,list_length})
           const result = $.ajax(ajax_request)
             .then(result => {
               const response_data = toggl_list_to_time_fields(result.data);
