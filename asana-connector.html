@@ -33,7 +33,7 @@
     <div class="container container-table">
       <div class="row vertical-center-row">
         <div class="text-center col-md-4 col-md-offset-4">
-          <button type="button" id="submitButton" class="btn btn-success" style="margin: 10px;">Get Data</button>
+          <button type="button" id="submitButton" class="btn btn-success" style="margin: 10px;">Get Asana Data</button>
         </div>
       </div>
     </div>
@@ -198,53 +198,17 @@ function asana_tasks_detail_pull() {
   var task_details = _.map(full_array, function(D) {
     return asana_task_get(D["gid"]);
   });
+
   return asana_task_detail_custom_fields_apply_list(task_details);
 }
 
+function asana_tasks_detail_pull_promise(){
+  return new Promise(resolve => {
+    resolve(asana_tasks_detail_pull())
+  })
+}
 
-      function pullTogglPageAll({ api_token, user_agent, workspace_id, toggl_list }) {
-        const since = "2020-08-20";
 
-        function pullTogglPage(toggl_tasks_pulled) {
-          return new Promise(resolve => {
-            const ajax_request = {
-              type: "GET",
-              url: "https://toggl.com/reports/api/v2/details",
-              headers: {
-                Authorization: "Basic " + btoa(api_token + ":" + "api_token")
-              },
-              dataType: "json",
-              async: false,
-              data: {
-                user_agent: user_agent || "vdermwcc@gmail.com",
-                workspace_id: workspace_id || "2429477",
-                since: since,
-                page: toggl_tasks_pulled.length == 0 ? 1 : Math.ceil(toggl_tasks_pulled.length / 50)
-              }
-            };
-            console.log({ ajax_request });
-            const result = $.ajax(ajax_request)
-              .then(result => {
-                const response_data = toggl_list_to_time_fields(result.data);
-                resolve(response_data);
-              })
-              .catch(error => {
-                console.log({ error });
-              });
-          });
-        }
-
-        return pullTogglPage(toggl_list).then(result => {
-          var iterate_to_next = toggl_list.length == 0 || toggl_list.length % 50 == 0;
-          if (iterate_to_next) {
-            var toggl_list_appended = toggl_list.concat(result);
-            pullTogglPageAll({ api_token, user_agent, workspace_id, toggl_list: toggl_list_appended });
-          } else {
-            console.log({ toggl_list });
-            return toggl_list;
-          }
-        });
-      }
       (function() {
         // Create the connector object
         var myConnector = tableau.makeConnector();
@@ -253,68 +217,38 @@ function asana_tasks_detail_pull() {
         myConnector.getSchema = function(schemaCallback) {
           var cols = [
             {
-              id: "description",
+              id: "name",
               dataType: tableau.dataTypeEnum.string
             },
             {
-              id: "id",
+              id: "assignee_name",
               dataType: tableau.dataTypeEnum.string
             },
             {
-              id: "dur",
-              alias: "dur",
-              dataType: tableau.dataTypeEnum.float
+              id: "permalink_url",
+              alias: "permalink_url",
+              dataType: tableau.dataTypeEnum.string
             },
             {
-              id: "cost",
-              alias: "cost",
-              dataType: tableau.dataTypeEnum.float
+              id: "completed",
+              alias: "completed",
+              dataType: tableau.dataTypeEnum.bool
             },
             {
-              id: "hours",
-              alias: "hours",
-              dataType: tableau.dataTypeEnum.float
-            },
-            {
-              id: "minutes",
-              alias: "minutes",
-              dataType: tableau.dataTypeEnum.float
-            },
-            {
-              id: "date",
-              alias: "date",
-              dataType: tableau.dataTypeEnum.date
-            },
-            {
-              id: "start",
-              alias: "start",
+              id: "created_at",
+              alias: "created_at",
               dataType: tableau.dataTypeEnum.datetime
             },
             {
-              id: "end",
-              alias: "end",
+              id: "completed_at",
+              alias: "completed_at",
               dataType: tableau.dataTypeEnum.datetime
-            },
-            {
-              id: "updated",
-              alias: "updated",
-              dataType: tableau.dataTypeEnum.datetime
-            },
-            {
-              id: "project",
-              alias: "project",
-              dataType: tableau.dataTypeEnum.string
-            },
-            {
-              id: "category",
-              alias: "category",
-              dataType: tableau.dataTypeEnum.string
-            },
+            }
           ];
 
           var tableSchema = {
-            id: "toggl",
-            alias: "toggl",
+            id: "asana",
+            alias: "asana",
             columns: cols
           };
 
@@ -323,29 +257,16 @@ function asana_tasks_detail_pull() {
 
         // Download the data
         myConnector.getData = function(table, doneCallback) {
-          pullTogglPageAll({
-            api_token: "4c2e7a7083b4434da3fda4fef989f353",
-            user_agent: "vdermwcc@gmail.com",
-            workspace_id: "2429477",
-            toggl_list: []
-          }).then(feat => {
+          asana_tasks_detail_pull_promise().then(feat => {
             tableData = [];
             for (var i = 0, len = feat.length; i < len; i++) {
               tableData.push({
-                description: feat[i].description,
-                id: feat[i].id,
-                dur: feat[i].dur,
-                cost: feat[i].cost,
-                hours: feat[i].hours,
-                minutes: feat[i].minutes,
-                date: feat[i].date,
-                start:moment(feat[i].start).format("YYYY-MM-DD HH:mm:ss"),
-                end:moment(feat[i].end).format("YYYY-MM-DD HH:mm:ss"),
-                updated:moment(feat[i].updated).format("YYYY-MM-DD HH:mm:ss"),
-                project: feat[i].project,
-                category: feat[i].category,
-
-
+                name: feat[i].name,
+                assignee_name: feat[i].assignee_name,
+                permalink_url: feat[i].permalink_url,
+                completed: feat[i].completed,
+                created_at:moment(feat[i].created_at).format("YYYY-MM-DD HH:mm:ss"),
+                completed_at:moment(feat[i].completed_at).format("YYYY-MM-DD HH:mm:ss"),
               });
             }
             table.appendRows(tableData);
@@ -357,7 +278,7 @@ function asana_tasks_detail_pull() {
         // Create event listeners for when the user submits the form
         $(document).ready(function() {
           $("#submitButton").click(function() {
-            tableau.connectionName = "Toggl"; // This will be the data source name in Tableau
+            tableau.connectionName = "Asana"; // This will be the data source name in Tableau
             tableau.submit(); // This sends the connector object to Tableau
           });
         });
