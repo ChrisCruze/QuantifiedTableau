@@ -33,7 +33,7 @@
     <div class="container container-table">
       <div class="row vertical-center-row">
         <div class="text-center col-md-4 col-md-offset-4">
-          <button type="button" id="submitButton" class="btn btn-success" style="margin: 10px;">Get Rumble Data</button>
+          <button type="button" id="submitButton" class="btn btn-success" style="margin: 10px;">Get Data</button>
         </div>
       </div>
     </div>
@@ -73,7 +73,7 @@
       }
 
       function pullTogglPageAll({ api_token, user_agent, workspace_id, toggl_list }) {
-        const since = "2020-12-01";
+        const since = "2020-08-20";
 
         function pullTogglPage(toggl_tasks_pulled) {
           return new Promise(resolve => {
@@ -96,7 +96,7 @@
             const result = $.ajax(ajax_request)
               .then(result => {
                 console.log({ result });
-                const response_data = result.responseJSON.data;
+                const response_data = result.data;
                 console.log({ response_data });
                 resolve(response_data);
               })
