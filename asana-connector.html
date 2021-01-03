@@ -195,10 +195,11 @@ function projects_from_local() {
 function asana_tasks_detail_pull() {
   const projects_array = projects_from_local(); //projects_from_local_storage(); //asana_projects_get();
   var full_array = asana_tasks_get_from_projects(projects_array);
+  console.log({full_array})
   var task_details = _.map(full_array, function(D) {
     return asana_task_get(D["gid"]);
   });
-
+  console.log({task_details})
   return asana_task_detail_custom_fields_apply_list(task_details);
 }
 
